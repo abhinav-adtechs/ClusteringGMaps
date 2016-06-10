@@ -1,13 +1,18 @@
 package abhinav.hackdev.co.googlemapstesting;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.SelfViewHolder>{
@@ -35,6 +40,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.SelfViewHolder>{
     @Override
     public void onBindViewHolder(SelfViewHolder holder, int position) {
         holder.textView.setText(rvDataList.get(position).getSampleData());
+        holder.circleImageView.setImageResource(R.drawable.user);
     }
 
     @Override
@@ -49,13 +55,14 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.SelfViewHolder>{
 
     public static class SelfViewHolder extends RecyclerView.ViewHolder{
 
+        public CircleImageView circleImageView ;
         public TextView textView ;
 
         public SelfViewHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView.findViewById(R.id.username_list) ;
+            circleImageView = (CircleImageView) itemView.findViewById(R.id.profile_image) ;
         }
-
 
     }
 

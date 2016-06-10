@@ -89,4 +89,10 @@ public class VideoPlayActivity extends AppCompatActivity implements
     public void onPrepared(MediaPlayer mp) {
         Log.d(TAG, "onPrepared: ");
     }
+
+    @Override
+    protected void onPause() {
+        mediaPlayer.stop();
+        super.onPause();
+    }
 }
