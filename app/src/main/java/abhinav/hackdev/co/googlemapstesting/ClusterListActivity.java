@@ -5,21 +5,24 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by abhinav on 09/06/16.
- */
+
 public class ClusterListActivity extends AppCompatActivity {
 
+    private static final String TAG = "SPLTAG";
     private List<RVData> myClusterItems = new ArrayList<>() ;
     private RecyclerView recyclerView ;
     private RVAdapter adapter ;
+    String clusterListString ;
+    private JSONArray jsonResponseArray ;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -27,7 +30,8 @@ public class ClusterListActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_cluster_list);
 
-        EventBus.getDefault().register(this);
+        clusterListString = getIntent().getStringExtra("clusterList") ;
+        Log.d(TAG, "onCreate: " + clusterListString);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewMain) ;
 
@@ -38,19 +42,25 @@ public class ClusterListActivity extends AppCompatActivity {
         adapter = new RVAdapter();
         recyclerView.setAdapter(adapter);
 
+        fillListData(clusterListString);
+
+
     }
 
+    private void fillListData(String clusterListString) {
 
-    @Subscribe
-    public void receiveEvent(ClusterListEvent clusterListEvent){
+        try {
+            jsonResponseArray = new JSONArray(clusterListString) ;
 
-        fillListData(clusterListEvent.getMyClusterItemList()) ;
-    }
+            for (int i = 0; i < jsonResponseArray.length(); i++) {
+                JSONObject jsonObject = jsonResponseArray.getJSONObject(i) ;
 
-    private void fillListData(List<MyClusterItem> myClusterItemList) {
-
-        for (MyClusterItem myClusterItem: myClusterItemList) {
-            myClusterItems.add(new RVData(myClusterItem.getUserId())) ;
+                Log.d(TAG, "fillListData: " + jsonObject.getString("userId"));
+                myClusterItems.add(new RVData(jsonObject.getString("position"))) ;
+            }
+        } catch (JSONException e) {
+            Log.d(TAG, "fillListData: ERROR ");
+            e.printStackTrace();
         }
 
         adapter.setStrings(myClusterItems);
@@ -61,7 +71,6 @@ public class ClusterListActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 }

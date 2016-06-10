@@ -1,5 +1,7 @@
 package abhinav.hackdev.co.googlemapstesting;
 
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -8,6 +10,9 @@ import java.util.List;
 public class ClusterListEvent {
 
     private List<MyClusterItem> myClusterItemList ;
+
+    public ClusterListEvent() {
+    }
 
     public ClusterListEvent(List<MyClusterItem> myClusterItemList) {
         this.myClusterItemList = myClusterItemList;
@@ -20,4 +25,6 @@ public class ClusterListEvent {
     public void setMyClusterItemList(List<MyClusterItem> myClusterItemList) {
         this.myClusterItemList = myClusterItemList;
     }
+
+
 }

@@ -23,6 +23,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
 
     private ClusterManager<MyClusterItem> mClusterManager;
+    private String globalResponse ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        globalResponse = response ;
                         try {
                             JSONArray responseArray = new JSONArray(response) ;
                             Log.d(TAG, "onResponse: " + responseArray);
@@ -136,15 +139,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public boolean onClusterClick(Cluster cluster) {
         Log.d(TAG, "onClusterClick: " + cluster.getSize() );
         List<MyClusterItem> list = new ArrayList(cluster.getItems()) ;
+        JSONObject jsonObject = new JSONObject() ;
+        JSONArray jsonArray = new JSONArray() ;
 
         for (MyClusterItem myClusterItem :
                 list) {
-            Log.d(TAG, "onClusterClick: " + myClusterItem.getUserId());
+
+
+            try {
+                jsonObject.put("userId", myClusterItem.getUserId()) ;
+                jsonObject.put("position", myClusterItem.getPosition()) ;
+                jsonObject.put("videoId", myClusterItem.getVideoId()) ;
+                jsonArray.put(jsonObject) ;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
-        EventBus.getDefault().postSticky(new ClusterListEvent(list));
+        Log.d(TAG, "onClusterClick: " + jsonArray.toString());
+
+
+
 
         Intent intent = new Intent(getApplicationContext(), ClusterListActivity.class) ;
+        intent.putExtra("clusterList", jsonArray.toString()) ;
         startActivity(intent);
         return false;
     }
