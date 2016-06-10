@@ -20,6 +20,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -77,7 +78,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "onErrorResponse: ");
+                Log.d(TAG, "onErrorResponse: " + error + " " );
+                error.printStackTrace();
             }
         }) ;
 
@@ -132,9 +134,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onClusterClick(Cluster cluster) {
-        Log.d(TAG, "onClusterClick: " + cluster.getSize());
-        List<MyClusterItem> list = new ArrayList<>(cluster.getItems()) ;
+        Log.d(TAG, "onClusterClick: " + cluster.getSize() );
+        List<MyClusterItem> list = new ArrayList(cluster.getItems()) ;
 
+        for (MyClusterItem myClusterItem :
+                list) {
+            Log.d(TAG, "onClusterClick: " + myClusterItem.getUserId());
+        }
+
+        EventBus.getDefault().postSticky(new ClusterListEvent(list));
+
+        Intent intent = new Intent(getApplicationContext(), ClusterListActivity.class) ;
+        startActivity(intent);
         return false;
     }
 
